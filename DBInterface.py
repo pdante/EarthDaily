@@ -13,6 +13,21 @@ class DBInterface:
             contents = scriptfile.read()
             self.cur.executescript(contents)
 
+    def getBirds(self,name, n, s, e, w):
+        pass
+
+    def getBirdsNoName(self,n,s,e,w):
+        pass
+
+    def createBird(self, name, lat, lng, start_hour, end_hour, day, month, year):
+        pass
+
+    def getDateId(self, day, month, year):
+        pass
+
+    def getTimeId(self, start, end):
+        pass
+
 
 d = DBInterface()
 d.setup()
