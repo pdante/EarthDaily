@@ -1,9 +1,69 @@
 from flask import Flask, request, jsonify
 from DBInterface import DBInterface as DB
+from jsonschema import validate, ValidationError, SchemaError
 
 app = Flask(__name__)
 db = DB()
 
+getSchemaBird = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string", "maxLenghth": 100},
+        "north": {"type": "number", "minimum": -90, "maximum": 90},
+        "south": {"type": "number", "minimum": -90, "maximum": 90},
+        "east": {"type": "number", "minimum": -180, "maximum": 180},
+        "west": {"type": "number", "minimum": -180, "maximum": 180},
+    },
+}
+
+getSchemaBirdDay = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string", "maxLenghth": 100},
+        "north": {"type": "number", "minimum": -90, "maximum": 90},
+        "south": {"type": "number", "minimum": -90, "maximum": 90},
+        "east": {"type": "number", "minimum": -180, "maximum": 180},
+        "west": {"type": "number", "minimum": -180, "maximum": 180},
+        "day": {"type": "integer", "minimum": 1, "maximum": 31},
+        "month": {"type": "integer", "minimum": 1, "maximum": 12},
+        "year": {"type": "integer", "minimum": 1, "maximum": 2099},
+    },
+}
+
+getSchemaNoBird = {
+    "type": "object",
+    "properties": {
+        "north": {"type": "number", "minimum": -90, "maximum": 90},
+        "south": {"type": "number", "minimum": -90, "maximum": 90},
+        "east": {"type": "number", "minimum": -180, "maximum": 180},
+        "west": {"type": "number", "minimum": -180, "maximum": 180},
+    },
+}
+
+getSchemaNoBirdDay = {
+    "type": "object",
+    "properties": {
+        "north": {"type": "number", "minimum": -90, "maximum": 90},
+        "south": {"type": "number", "minimum": -90, "maximum": 90},
+        "east": {"type": "number", "minimum": -180, "maximum": 180},
+        "west": {"type": "number", "minimum": -180, "maximum": 180},
+        "day": {"type": "integer", "minimum": 1, "maximum": 31},
+        "month": {"type": "integer", "minimum": 1, "maximum": 12},
+        "year": {"type": "integer", "minimum": 1, "maximum": 2099},
+    },
+}
+
+newBirdSchema = {
+    "type": "object",
+    "properties": {
+        "name": {"type": "string", "maxLength": 100},
+        "lat": {"type": "number", "minimum": -90, "maximum": 90},
+        "lng": {"type": "number", "minimum": -180, "maximum": 180},
+        "day": {"type": "number", "minimum": 1, "maximum": 31},
+        "month": {"type": "number", "minimum": 1, "maximum": 12},
+        "year": {"type": "number", "minimum": 1, "maximum": 2099},
+    },
+}
 
 class Error(Exception):
     pass
@@ -31,12 +91,12 @@ def invalidateDay(day, month, year):
     return False
 
 
-def invalidLat(north):
-    pass
+def invalidLat(lat):
+    return lat > 90 or lat < -90
 
 
-def invalidLng(east):
-    pass
+def invalidLng(lng):
+    return lng > 180 or lng < -180
 
 
 @app.route('/', methods=['GET','POST'])
@@ -44,6 +104,8 @@ def birds():
     if request.method == 'GET':
         try:
             body = request.get_json()
+            if invalidGETJSON(body):
+                  raise ValueError
             north = float(body["north"])
             south = float(body["south"])
             east = float(body["east"])
@@ -54,7 +116,7 @@ def birds():
             year = 0
             named = False
             dayed = False
-            if invalidLat(north) or invalidLat(south) or invalidLng(east) or invalidLng(west):
+            if invalidLat(north) or invalidLat(south) or invalidLng(east) or invalidLng(west) or north < south:
                 raise ValueError
             if "name" in body and not body["name"]:
                 name = body["name"]
@@ -105,3 +167,32 @@ def birds():
     else:
         error_message = """Currently only GET and POST requests are allowed. Please try again."""
         return jsonify(message=error_message)
+
+
+def invalidGETJSON(jsonbody):
+    if "name" in jsonbody:
+        if "day" in jsonbody:
+            try:
+                validate(instance=jsonbody, schema=getSchemaBirdDay)
+            except (ValidationError, SchemaError):
+                return True
+            return False
+        else:
+            try:
+                validate(instance=jsonbody, schema=getSchemaBird)
+            except (ValidationError, SchemaError):
+                return True
+            return False
+    else:
+        if "day" in jsonbody:
+            try:
+                validate(instance=jsonbody, schema=getSchemaNoBirdDay)
+            except (ValidationError, SchemaError):
+                return True
+            return False
+        else:
+            try:
+                validate(instance=jsonbody, schema=getSchemaNoBird)
+            except (ValidationError, SchemaError):
+                return True
+            return False
