@@ -14,6 +14,7 @@ getSchemaBird = {
         "east": {"type": "number", "minimum": -180, "maximum": 180},
         "west": {"type": "number", "minimum": -180, "maximum": 180},
     },
+    "required": ["name","north","south","east","west"]
 }
 
 getSchemaBirdDay = {
@@ -28,6 +29,7 @@ getSchemaBirdDay = {
         "month": {"type": "integer", "minimum": 1, "maximum": 12},
         "year": {"type": "integer", "minimum": 1, "maximum": 2099},
     },
+    "required": ["name","north","south","east","west","day","month","year"]
 }
 
 getSchemaNoBird = {
@@ -38,6 +40,7 @@ getSchemaNoBird = {
         "east": {"type": "number", "minimum": -180, "maximum": 180},
         "west": {"type": "number", "minimum": -180, "maximum": 180},
     },
+    "required": ["north","south","east","west"]
 }
 
 getSchemaNoBirdDay = {
@@ -51,6 +54,7 @@ getSchemaNoBirdDay = {
         "month": {"type": "integer", "minimum": 1, "maximum": 12},
         "year": {"type": "integer", "minimum": 1, "maximum": 2099},
     },
+    "required": ["name", "north", "south", "east", "west", "day", "month", "year"]
 }
 
 newBirdSchema = {
