@@ -102,10 +102,59 @@ class DBInterface:
         return self.cur.execute(sql, params).fetchall()
 
     def createBird(self, name, lat, lng, day, month, year):
-        pass
+        cur = self.con.cursor()
+        cap_name = name.capitalize()
+        date_id = self.getDateId(day, month, year)
+        print("Date")
+        print(date_id)
+        sql = """select bird_id from Birds where bird_name like ? AND lat = ? AND lng = ? and date_id = ?"""
+        params = (cap_name, lat, lng, date_id)
+        res = cur.execute(sql, params).fetchall()
+        if not res:
+            print("Got here")
+            sql = """INSERT INTO Birds (bird_name, lat, lng, date_id) VALUES(?,?,?,?)"""
+            cur.execute(sql, params)
+            sql = """select * from Birds"""
+            rows = self.cur.execute(sql, ).fetchall()
+            print(2)
+            for row in rows:
+                print(row["date_id"])
+            self.con.commit()
+            cur.close()
+            return "You added a new bird to the database"
+        else:
+            cur.close()
+            return "There is already a bird recorded with that name, at that location, on that day"
 
     def getDateId(self, day, month, year):
-        pass
+        cur = self.con.cursor()
+        print("Day " + str(day))
+        print("Month " + str(month))
+        print("Year " + str(year))
+        sql = """Select * from Dates"""
+        rows = cur.execute(sql, ).fetchall()
+        print("rows")
+        print(*rows)
+        for row in rows:
+            print(row["date_id"])
+            print(row["day"])
+            print(row["month"])
+            print(row["Year"])
+        sql = """select date_id from Dates where day = ? and month = ? and year = ?"""
+        params = (day, month, year)
+        row = cur.execute(sql, params).fetchone()
+        if row:
+            d_id = row['date_id']
+            cur.close()
+            return d_id
+        else:
+            sql = """INSERT INTO Dates (day, month, year) VALUES(?,?,?) RETURNING date_id"""
+            row = cur.execute(sql, params).fetchone()
+            self.con.commit()
+            print("Id?")
+            print(row['date_id'])
+            cur.close()
+            return row['date_id']
 
 
 d = DBInterface()
