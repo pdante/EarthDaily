@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS Birds (
     bird_id INTEGER PRIMARY KEY NOT NULL,
     bird_name TEXT NOT NULL,
     date_id INTEGER NOT NULL,
-    time_id INTEGER NOT NULL,
     lat NUMERIC NOT NULL,
     lng NUMERIC NOT NULL
 )
@@ -14,10 +13,5 @@ CREATE TABLE IF NOT EXISTS Dates (
     year INTEGER NOT NULL
 )
 
-CREATE TABLE IF NOT EXISTS Times (
-    time_id INTEGER PRIMARY KEY NOT NULL,
-    start_hour INTEGER NOT NULL,
-    end_hour INTEGER NOT NULL,
-)
 
-INSERT INTO Times (time_id, start_hour, end_hour) VALUES (1, 0, 24)
+
