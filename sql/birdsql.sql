@@ -4,14 +4,14 @@ CREATE TABLE IF NOT EXISTS Birds (
     date_id INTEGER NOT NULL,
     lat NUMERIC NOT NULL,
     lng NUMERIC NOT NULL
-)
+);
 
 CREATE TABLE IF NOT EXISTS Dates (
     date_id INTEGER PRIMARY KEY NOT NULL,
     day INTEGER NOT NULL,
     month INTEGER NOT NULL,
     year INTEGER NOT NULL
-)
+);
 
 
 

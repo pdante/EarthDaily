@@ -143,7 +143,7 @@ def birds():
             else:
                 return jsonify(db.getBirdsDay(north, south, east, west, name, day, month, year))
         except ValueError:
-            errorMessage = """The json included in the body of this Get request was an invalid json for this api endpoint. The following numeric fields are required [north, south, east, west], the string field [name] is optional, and the integer fields [day, month, year] are also optional but must all exist to be used, no other fields are allowed. [north] and [south] must be <= 90 and >=-90. [east] and [west] must be <= 180 and >=-180. [name] is maximum 100 characters. [year] must be between 1 and 2099. [day], [month], and [year] must be a valid combo to account for both different length months and leap years"""
+            errorMessage = """The json included in the body of this GET request was an invalid json for this api endpoint. The following numeric fields are required [north, south, east, west], the string field [name] is optional, and the integer fields [day, month, year] are also optional but must all exist to be used, no other fields are allowed. [north] and [south] must be <= 90 and >=-90. [east] and [west] must be <= 180 and >=-180. [name] is maximum 100 characters. [year] must be between 1 and 2099. [day], [month], and [year] must be a valid combo to account for both different length months and leap years"""
             return jsonify(message=errorMessage)
 
     elif request.method == 'POST':
@@ -167,7 +167,7 @@ def birds():
         except BadDay:
             errorMessage = """The day of the month you indicated does not exist with your selected month and year"""
             return jsonify(message=errorMessage)
-        db.createBird(name, lat, lng, day, month, year)
+        return db.createBird(name, lat, lng, day, month, year)
     else:
         error_message = """Currently only GET and POST requests are allowed. Please try again."""
         return jsonify(message=error_message)
