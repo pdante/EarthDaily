@@ -1,4 +1,6 @@
-from flask import Flask, request, jsonify
+import json
+
+from flask import Flask, request, jsonify, Response
 from DBInterface import DBInterface as DB
 from jsonschema import validate, ValidationError, SchemaError
 
@@ -135,13 +137,25 @@ def birds():
                     raise ValueError
                 dayed = True
             if not named and not dayed:
-                return jsonify(db.getAllBirds(north, south, east, west))
+                result = db.getAllBirds(north, south, east, west)
+                data = json.dumps(result)
+                resp = Response(data, status=200, mimetype='application/json')
+                return resp
             elif not dayed:
-                return jsonify(db.getBirds(north, south, east, west, name))
+                result = db.getBirds(north, south, east, west, name)
+                data = json.dumps(result)
+                resp = Response(data, status=200, mimetype='application/json')
+                return resp
             elif not named:
-                return jsonify(db.getAllBirdsDay(north,south,east,west,day,month,year))
+                result = db.getAllBirdsDay(north,south,east,west,day,month,year)
+                data = json.dumps(result)
+                resp = Response(data, status=200, mimetype='application/json')
+                return resp
             else:
-                return jsonify(db.getBirdsDay(north, south, east, west, name, day, month, year))
+                result = db.getBirdsDay(north, south, east, west, name, day, month, year)
+                data = json.dumps(result)
+                resp = Response(data, status=200, mimetype='application/json')
+                return resp
         except ValueError:
             errorMessage = """The json included in the body of this GET request was an invalid json for this api endpoint. The following numeric fields are required [north, south, east, west], the string field [name] is optional, and the integer fields [day, month, year] are also optional but must all exist to be used, no other fields are allowed. [north] and [south] must be <= 90 and >=-90. [east] and [west] must be <= 180 and >=-180. [name] is maximum 100 characters. [year] must be between 1 and 2099. [day], [month], and [year] must be a valid combo to account for both different length months and leap years"""
             return jsonify(message=errorMessage)

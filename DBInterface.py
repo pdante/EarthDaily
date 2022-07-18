@@ -26,11 +26,13 @@ class DBInterface:
                     SELECT bird_id 
                     FROM Birds
                     WHERE lat <= ? AND lat >= ?
-                        AND ((?>=? AND lng<=? AND lng>=?) OR (lng<=? OR lng >= ?))
+                        AND ((?>=? AND lng<=? AND lng>=?) OR (lng<=? OR lng >= ?)))
                 """
         params = (n, s, e, w, e, w, e, w)
-
-        return self.cur.execute(sql, params)
+        self.cur.execute(sql, params)
+        rv = [dict((self.cur.description[idx][0], value)
+                   for idx, value in enumerate(row)) for row in self.cur.fetchall()]
+        return rv
 
     def getAllBirdsDay(self, n, s, e, w, day, month, year):
         sql = """
@@ -49,7 +51,10 @@ class DBInterface:
                         """
         params = (n, s, e, w, e, w, e, w, year, month, day)
 
-        return self.cur.execute(sql, params)
+        self.cur.execute(sql, params)
+        rv = [dict((self.cur.description[idx][0], value)
+                   for idx, value in enumerate(row)) for row in self.cur.fetchall()]
+        return rv
 
     def getBirds(self, n, s, e, w, name):
         sql = """
@@ -68,7 +73,10 @@ class DBInterface:
                 """
         params = (name.capitalize(), n, s, e, w, e, w, e, w)
 
-        return self.cur.execute(sql, params).fetchall()
+        self.cur.execute(sql, params)
+        rv = [dict((self.cur.description[idx][0], value)
+                   for idx, value in enumerate(row)) for row in self.cur.fetchall()]
+        return rv
 
     def getBirdsDay(self, n, s, e, w, name, day, month, year):
         sql = """
@@ -88,7 +96,10 @@ class DBInterface:
                         """
         params = (name.capitalize(), n, s, e, w, e, w, e, w, year, month, day)
 
-        return self.cur.execute(sql, params).fetchall()
+        self.cur.execute(sql, params)
+        rv = [dict((self.cur.description[idx][0], value)
+                   for idx, value in enumerate(row)) for row in self.cur.fetchall()]
+        return rv
 
     def createBird(self, name, lat, lng, day, month, year):
         cur = self.con.cursor()
